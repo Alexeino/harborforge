@@ -1,9 +1,89 @@
-// The day the fire was lit. Change this if you want the counter to start elsewhere.
-const FIRE_LIT = new Date("2026-10-25T00:00:00");
+// Content comes from config.js (window.SITE). Edit that file, not this one.
+const SITE = window.SITE || {};
+
+// "YYYY-MM-DD" parsed as local time (new Date("YYYY-MM-DD") would be UTC and can show the previous day).
+function parseDate(str) {
+  const [y, m, d] = String(str).split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+const formatDate = (str) =>
+  parseDate(str).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+const FIRE_LIT = parseDate(SITE.startDate || "2026-10-25");
 
 document.documentElement.classList.remove("no-js");
 
-const reduceMotion =window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// ---------- Render content from config ----------
+// Builds elements with textContent, so config text never gets parsed as HTML.
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (value == null || value === false) continue;
+    if (key === "class") node.className = value;
+    else node.setAttribute(key, value);
+  }
+  for (const child of children) {
+    if (child == null || child === false) continue;
+    node.append(child instanceof Node ? child : String(child));
+  }
+  return node;
+}
+
+const isExternal = (url) => /^https?:\/\//i.test(url);
+const linkAttrs = (url) =>
+  isExternal(url) ? { href: url, target: "_blank", rel: "noopener" } : { href: url };
+
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+const STATUS_LABELS = { hot: "Red hot", cooling: "Cooling", tempered: "Tempered", cold: "Cold iron" };
+
+(function renderContent() {
+  if (SITE.startDate) document.getElementById("fire-date").textContent = formatDate(SITE.startDate);
+  if (SITE.intro) document.getElementById("intro").textContent = SITE.intro;
+
+  document.getElementById("vows").append(
+    ...(SITE.vows || []).map((vow, i) =>
+      el("li", { class: "vow reveal" },
+        el("span", { class: "vow-num mono" }, ROMAN[i] || i + 1),
+        el("h3", {}, vow.title),
+        el("p", {}, vow.text)
+      )
+    )
+  );
+
+  document.getElementById("projects").append(
+    ...(SITE.projects || []).map((p) => {
+      const status = STATUS_LABELS[p.status] ? p.status : "hot";
+      return el("article", { class: status === "cold" ? "card card-empty reveal" : "card reveal", "data-status": status },
+        el("div", { class: "card-top" },
+          el("span", { class: "status mono" }, STATUS_LABELS[status]),
+          p.tag && el("span", { class: "tag mono" }, p.tag)
+        ),
+        el("h3", {}, p.title),
+        el("p", {}, p.text),
+        p.link && p.link.url && el("a", { class: "card-link", ...linkAttrs(p.link.url) }, `${p.link.label || "Open"} →`)
+      );
+    })
+  );
+
+  document.getElementById("log-list").append(
+    ...(SITE.log || []).map((entry) =>
+      el("li", { class: entry.date ? "entry reveal" : "entry entry-future reveal" },
+        entry.date
+          ? el("time", { class: "mono", datetime: entry.date }, formatDate(entry.date))
+          : el("time", { class: "mono" }, "Soon"),
+        el("div", {}, el("h3", {}, entry.title), el("p", {}, entry.text))
+      )
+    )
+  );
+
+  const links = document.getElementById("contact-links");
+  if (SITE.email) links.append(el("a", { class: "btn btn-primary", href: `mailto:${SITE.email}` }, "Email me"));
+  (SITE.socials || [])
+    .filter((s) => s.url)
+    .forEach((s) => links.append(el("a", { class: "btn btn-ghost", ...linkAttrs(s.url) }, s.label)));
+})();
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------- Days counter ----------
 (function daysBurning() {
@@ -26,6 +106,39 @@ const reduceMotion =window.matchMedia("(prefers-reduced-motion: reduce)").matche
 })();
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
+// ---------- Theme ----------
+const root = document.documentElement;
+const themeToggle = document.querySelector(".theme-toggle");
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const systemLight = window.matchMedia("(prefers-color-scheme: light)");
+
+function applyTheme(theme, animate) {
+  if (animate && !reduceMotion) {
+    root.classList.add("theme-anim");
+    setTimeout(() => root.classList.remove("theme-anim"), 400);
+  }
+  root.dataset.theme = theme;
+  themeMeta.content = theme === "light" ? "#f6f1e8" : "#0b1320";
+  themeToggle.setAttribute("aria-label", theme === "light" ? "Switch to dark theme" : "Switch to light theme");
+}
+
+function savedTheme() {
+  try { return localStorage.getItem("hf-theme"); } catch (e) { return null; }
+}
+
+applyTheme(root.dataset.theme || "dark", false);
+
+themeToggle.addEventListener("click", () => {
+  const next = root.dataset.theme === "light" ? "dark" : "light";
+  try { localStorage.setItem("hf-theme", next); } catch (e) {}
+  applyTheme(next, true);
+});
+
+// Follow the OS setting live, unless the visitor picked a theme themselves.
+systemLight.addEventListener("change", (e) => {
+  if (!savedTheme()) applyTheme(e.matches ? "light" : "dark", true);
+});
 
 // ---------- Nav ----------
 const nav = document.querySelector(".nav");
@@ -73,17 +186,32 @@ if ("IntersectionObserver" in window && !reduceMotion) {
   const hero = canvas.parentElement;
   let w = 0, h = 0, dpr, particles = [], running = true;
 
-  // Pre-render one glowing ember; drawing a bitmap is far cheaper than shadowBlur per particle.
-  const sprite = document.createElement("canvas");
-  sprite.width = sprite.height = 32;
-  const sctx = sprite.getContext("2d");
-  const grad = sctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-  grad.addColorStop(0, "rgba(255, 230, 180, 1)");
-  grad.addColorStop(0.2, "rgba(255, 160, 70, 0.9)");
-  grad.addColorStop(0.5, "rgba(255, 110, 40, 0.25)");
-  grad.addColorStop(1, "rgba(255, 90, 30, 0)");
-  sctx.fillStyle = grad;
-  sctx.fillRect(0, 0, 32, 32);
+  // Pre-render one glowing ember per theme; drawing a bitmap is far cheaper than shadowBlur per particle.
+  function makeSprite(stops) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 32;
+    const sctx = c.getContext("2d");
+    const grad = sctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    stops.forEach(([at, color]) => grad.addColorStop(at, color));
+    sctx.fillStyle = grad;
+    sctx.fillRect(0, 0, 32, 32);
+    return c;
+  }
+  const sprites = {
+    dark: makeSprite([
+      [0, "rgba(255, 230, 180, 1)"],
+      [0.2, "rgba(255, 160, 70, 0.9)"],
+      [0.5, "rgba(255, 110, 40, 0.25)"],
+      [1, "rgba(255, 90, 30, 0)"],
+    ]),
+    // Additive blending vanishes on a light background, so light embers are darker and drawn normally.
+    light: makeSprite([
+      [0, "rgba(240, 110, 30, 1)"],
+      [0.25, "rgba(228, 87, 15, 0.8)"],
+      [0.55, "rgba(228, 87, 15, 0.18)"],
+      [1, "rgba(228, 87, 15, 0)"],
+    ]),
+  };
 
   function resize() {
     const nw = hero.clientWidth;
@@ -116,7 +244,9 @@ if ("IntersectionObserver" in window && !reduceMotion) {
     const target = w < 600 ? 30 : 60;
     if (particles.length < target && Math.random() < 0.5) particles.push(spawn());
 
-    ctx.globalCompositeOperation = "lighter";
+    const light = root.dataset.theme === "light";
+    const sprite = light ? sprites.light : sprites.dark;
+    ctx.globalCompositeOperation = light ? "source-over" : "lighter";
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.life++;
