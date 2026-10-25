@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Harbor Forge</title>
+  <meta name="description" content="Harbor Forge — a promise to never stop building. A harbor to return to, a forge that never cools." />
+  <meta name="theme-color" content="#0b1320" />
+
+  <meta property="og:title" content="Harbor Forge" />
+  <meta property="og:description" content="A harbor to return to. A forge that never cools." />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="top">
+    <a class="brand" href="#top" aria-label="Harbor Forge home">
+      <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+        <use href="#hf-mark" />
+      </svg>
+      <span>Harbor<em>Forge</em></span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+    <nav id="nav-links" class="nav-links">
+      <a href="#promise">The Promise</a>
+      <a href="#anvil">On the Anvil</a>
+      <a href="#log">Forge Log</a>
+      <a href="#contact" class="nav-cta">Say hello</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <canvas id="sparks" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <p class="eyebrow mono">Fire lit · 25 Oct 2026</p>
+        <h1>
+          A harbor to return to.<br />
+          <span class="ember">A forge that never cools.</span>
+        </h1>
+        <p class="lede">
+          Harbor Forge is a promise I made to myself: keep building, keep shaping,
+          keep showing up at the anvil. Whatever the weather, there is always
+          something to forge.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#promise">Read the promise</a>
+          <a class="btn btn-ghost" href="#anvil">See what's heating up</a>
+        </div>
+        <div class="heat" aria-live="polite">
+          <span class="heat-dot"></span>
+          <span class="mono">The forge has burned for <strong id="days">0</strong> <span id="days-label">days</span></span>
+        </div>
+      </div>
+      <div class="waves" aria-hidden="true">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,64 C240,112 480,16 720,56 C960,96 1200,24 1440,60 L1440,120 L0,120 Z"/></svg>
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,80 C200,40 420,110 720,74 C1020,38 1240,104 1440,70 L1440,120 L0,120 Z"/></svg>
+      </div>
+    </section>
+
+    <!-- PROMISE -->
+    <section class="section promise" id="promise">
+      <div class="section-head reveal">
+        <p class="eyebrow mono">01 — The Promise</p>
+        <h2>Four vows, struck in iron.</h2>
+      </div>
+      <ol class="vows">
+        <li class="vow reveal">
+          <span class="vow-num mono">I</span>
+          <h3>Never stop building.</h3>
+          <p>Small or large, finished or rough. Something leaves the forge every season.</p>
+        </li>
+        <li class="vow reveal">
+          <span class="vow-num mono">II</span>
+          <h3>Heat, strike, repeat.</h3>
+          <p>Progress comes from repetition. Every attempt hardens the craft a little more.</p>
+        </li>
+        <li class="vow reveal">
+          <span class="vow-num mono">III</span>
+          <h3>Return to harbor.</h3>
+          <p>Rest is part of the work. The harbor is where I reflect, repair and set out again.</p>
+        </li>
+        <li class="vow reveal">
+          <span class="vow-num mono">IV</span>
+          <h3>Build in the open.</h3>
+          <p>Share the sparks and the slag. Honest logs beat polished silence.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ANVIL / PROJECTS -->
+    <section class="section anvil" id="anvil">
+      <div class="section-head reveal">
+        <p class="eyebrow mono">02 — On the Anvil</p>
+        <h2>What's being forged.</h2>
+        <p class="section-sub">The things I'm shaping right now. Some will become tools, some lessons. All of them get built.</p>
+      </div>
+
+      <!-- Edit these cards: set data-status to "hot", "cooling" or "tempered" -->
+      <div class="cards">
+        <article class="card reveal" data-status="hot">
+          <div class="card-top">
+            <span class="status mono">Red hot</span>
+            <span class="tag mono">2026</span>
+          </div>
+          <h3>Harbor Forge</h3>
+          <p>This site. The first thing out of the forge, and the place every future build gets logged.</p>
+          <a class="card-link" href="#log">Follow the log →</a>
+        </article>
+
+        <article class="card reveal" data-status="hot">
+          <div class="card-top">
+            <span class="status mono">Red hot</span>
+            <span class="tag mono">Project</span>
+          </div>
+          <h3>Project Sage</h3>
+          <p>Something wise is taking shape. Details coming once the metal holds its form.</p>
+          <a class="card-link" href="#contact">Ask about it →</a>
+        </article>
+
+        <article class="card card-empty reveal" data-status="cold">
+          <div class="card-top">
+            <span class="status mono">Cold iron</span>
+            <span class="tag mono">Next</span>
+          </div>
+          <h3>Your next build</h3>
+          <p>An empty spot on the anvil, kept on purpose. Something always comes next.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section class="section log" id="log">
+      <div class="section-head reveal">
+        <p class="eyebrow mono">03 — Forge Log</p>
+        <h2>Every strike, recorded.</h2>
+      </div>
+
+      <!-- Add new entries at the top -->
+      <ol class="timeline">
+        <li class="entry reveal">
+          <time class="mono" datetime="2026-10-25">25 Oct 2026</time>
+          <div>
+            <h3>The fire is lit.</h3>
+            <p>Harbor Forge goes live. Made the promise and wrote it down, so now it's on the record. Day one.</p>
+          </div>
+        </li>
+        <li class="entry entry-future reveal">
+          <time class="mono">Soon</time>
+          <div>
+            <h3>The next strike.</h3>
+            <p>Whatever comes next lands here.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section contact" id="contact">
+      <div class="contact-card reveal">
+        <p class="eyebrow mono">04 — Dock here</p>
+        <h2>Pull into the harbor.</h2>
+        <p>Want to build something together, trade notes, or just say hi? Drop anchor.</p>
+        <!-- Replace these links with your own -->
+        <div class="links">
+          <a class="btn btn-primary" href="mailto:hello@example.com">Email me</a>
+          <a class="btn btn-ghost" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn btn-ghost" href="https://x.com/" target="_blank" rel="noopener">X</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#hf-mark" /></svg>
+    <p class="mono">Harbor Forge · <span id="year">2026</span> · Still burning.</p>
+    <a class="mono back-top" href="#top">Back to top ↑</a>
+  </footer>
+
+  <!-- Logo mark: an anchor with an anvil for a crossbar -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="hf-mark" viewBox="0 0 64 64">
+      <path fill="currentColor" d="M14 12h36l-4 6H38v4h-12v-4H18z" />
+      <circle cx="32" cy="27" r="3.2" fill="none" stroke="currentColor" stroke-width="2.6" />
+      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M32 30v24" />
+      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M14 40c2 9 9 14 18 14s16-5 18-14M10 44l4-4 4 4M46 44l4-4 4 4" />
+      <path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M24 36h16" />
+    </symbol>
+  </svg>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
